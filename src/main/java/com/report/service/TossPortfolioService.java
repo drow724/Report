@@ -1,6 +1,5 @@
 package com.report.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.Cookie;
 import com.report.constants.ReportType;
@@ -19,8 +18,6 @@ import java.util.stream.IntStream;
 public class TossPortfolioService {
 
     private final TossPortfolioCacheContainer container;
-
-    private final ObjectMapper mapper;
 
     public void generateTossPortfolio() {
         try (Playwright playwright = Playwright.create();
@@ -142,57 +139,18 @@ public class TossPortfolioService {
 
             String dailyRevenue = dailyRevenueLocator.innerText();
 
-            Locator overSeasLocator = page.locator("//*[@id=\"all-tab\"]/section[1]/header/div/div/span[1]");
-
-            String overSeas = overSeasLocator.innerText();
-            String overSeasTotal = overSeas.split(" · ")[1];
-
-            Locator overSeasRevenueLocator = page.locator("//*[@id=\"all-tab\"]/section[1]/header/div/div/span[2]/span");
-
-            String overSeasRevenue = overSeasRevenueLocator.innerText();
-
-            List<Locator> overSeasLocators = page.locator("//*[@id=\"all-tab\"]/section[1]/div/div/div/div/table/tbody/tr").all();
-
-            Locator overSeasHeaderTr = page.locator("//*[@id=\"all-tab\"]/section[1]/div/div/div/div/table/thead/tr");
-
-            List<Locator> overSeasHeaderThs = overSeasHeaderTr.locator("th").all();
-
-            List<Map<String, Object>> overSeasList = new ArrayList<>();
-
-            for(int i = 1; i < overSeasLocators.size(); i++) {
-                Locator contentTr = overSeasLocators.get(i);
-                List<Locator> contentTds = contentTr.locator("td").all();
-
-                Map<String, Object> overSeasTable = IntStream.range(0, contentTds.size())
-                        .mapToObj(j -> {
-                            Locator headerTh = overSeasHeaderThs.get(j);
-                            String key = headerTh.innerText().trim();
-
-                            TossPortfolioHeader header = TossPortfolioHeader.fromName(key);
-                            String headerName = header.getVariableName();
-
-                            Locator contentTd = contentTds.get(j);
-                            String value = contentTd.innerText().trim();
-
-                            return new AbstractMap.SimpleEntry<>(headerName, value);
-                        })
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-                overSeasList.add(overSeasTable);
-            }
-
-            Locator domesticLocator = page.locator("//*[@id=\"all-tab\"]/section[2]/header/div/div/span[1]");
+            Locator domesticLocator = page.locator("//*[@id=\"all-tab\"]/section[1]/header/div/div/span[1]");
 
             String domestic = domesticLocator.innerText();
             String domesticTotal = domestic.split(" · ")[1];
 
-            Locator domesticRevenueLocator = page.locator("//*[@id=\"all-tab\"]/section[2]/header/div/div/span[2]/span");
+            Locator domesticRevenueLocator = page.locator("//*[@id=\"all-tab\"]/section[1]/header/div/div/span[2]/span");
 
             String domesticRevenue = domesticRevenueLocator.innerText();
 
-            List<Locator> domesticLocators = page.locator("//*[@id=\"all-tab\"]/section[2]/div/div/div/div/table/tbody/tr").all();
+            List<Locator> domesticLocators = page.locator("//*[@id=\"all-tab\"]/section[1]/div/div/div/div/table/tbody/tr").all();
 
-            Locator domesticHeaderTr = page.locator("//*[@id=\"all-tab\"]/section[2]/div/div/div/div/table/thead/tr");
+            Locator domesticHeaderTr = page.locator("//*[@id=\"all-tab\"]/section[1]/div/div/div/div/table/thead/tr");
 
             List<Locator> domesticHeaderThs = domesticHeaderTr.locator("th").all();
 
@@ -218,6 +176,45 @@ public class TossPortfolioService {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 domesticsList.add(domesticTable);
+            }
+
+            Locator overSeasLocator = page.locator("//*[@id=\"all-tab\"]/section[2]/header/div/div/span[1]");
+
+            String overSeas = overSeasLocator.innerText();
+            String overSeasTotal = overSeas.split(" · ")[1];
+
+            Locator overSeasRevenueLocator = page.locator("//*[@id=\"all-tab\"]/section[2]/header/div/div/span[2]/span");
+
+            String overSeasRevenue = overSeasRevenueLocator.innerText();
+
+            List<Locator> overSeasLocators = page.locator("//*[@id=\"all-tab\"]/section[2]/div/div/div/div/table/tbody/tr").all();
+
+            Locator overSeasHeaderTr = page.locator("//*[@id=\"all-tab\"]/section[2]/div/div/div/div/table/thead/tr");
+
+            List<Locator> overSeasHeaderThs = overSeasHeaderTr.locator("th").all();
+
+            List<Map<String, Object>> overSeasList = new ArrayList<>();
+
+            for(int i = 1; i < overSeasLocators.size(); i++) {
+                Locator contentTr = overSeasLocators.get(i);
+                List<Locator> contentTds = contentTr.locator("td").all();
+
+                Map<String, Object> overSeasTable = IntStream.range(0, contentTds.size())
+                        .mapToObj(j -> {
+                            Locator headerTh = overSeasHeaderThs.get(j);
+                            String key = headerTh.innerText().trim();
+
+                            TossPortfolioHeader header = TossPortfolioHeader.fromName(key);
+                            String headerName = header.getVariableName();
+
+                            Locator contentTd = contentTds.get(j);
+                            String value = contentTd.innerText().trim();
+
+                            return new AbstractMap.SimpleEntry<>(headerName, value);
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                overSeasList.add(overSeasTable);
             }
 
             TossPortfolioDTO dto = TossPortfolioDTO

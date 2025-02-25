@@ -24,15 +24,9 @@ public class CacheScheduler {
 
     private final ObjectMapper mapper;
 
-//    @PostConstruct
-//    public void postConstruct() throws JsonProcessingException {
-//        generateCache();
-//    }
-
-    @Scheduled(fixedRate = 1000 * 60)
-    public void doLogin() {
-        kBPortfolioService.keepSession();
-        kBPortfolioService.generateKBPortfolio();
+    @PostConstruct
+    public void postConstruct() throws JsonProcessingException {
+        generateCache();
     }
 
     // 매일 오전 9시 정각에 캐시 초기화
@@ -45,6 +39,15 @@ public class CacheScheduler {
         StringBuilder builder = new StringBuilder();
         String tossPortfolio = mapper.writeValueAsString(tossPortfolioDTO);
         builder.append(tossPortfolio);
+
+        builder.append("\n");
+
+        kBPortfolioService.generateKBPortfolio();
+
+        KBPortfolioDTO kbPortfolioDTO = kBPortfolioService.retrieveKBPortfolio();
+
+        String kbPortfolio = mapper.writeValueAsString(kbPortfolioDTO);
+        builder.append(kbPortfolio);
 
         builder.append("\n");
 

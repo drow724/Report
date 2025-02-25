@@ -1,23 +1,14 @@
 package com.report.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.playwright.*;
 import com.report.container.KBPortfolioCacheContainer;
 import com.report.dto.KBPortfolioDTO;
-import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import com.report.dto.KBPortfolioDTO.FundDetail;
 
-import java.util.ArrayList;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,156 +16,139 @@ public class KBPortfolioService {
 
     private final KBPortfolioCacheContainer container;
 
-    private final ObjectMapper mapper;
-
-    public void keepSession() {
-        final RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = getHeaders();
-
-        ResponseEntity<String> entity = restTemplate.exchange("https://obank.kbstar.com/quics?asfilecode=548634&QSL=F", HttpMethod.POST, new HttpEntity<>(headers), String.class);
-        HttpHeaders responseHeader = entity.getHeaders();
-
-        List<String> cookies = Optional.ofNullable(responseHeader.get("Set-Cookie")).orElseGet(ArrayList::new);
-
-        for(String cookie : cookies) {
-            String[] str = cookie.split("=");
-            if("JSESSIONID".equals(str[0])) {
-                container.setJsessionId(str[1]);
-                continue;
-            }
-
-            if("QSID".equals(str[0])) {
-                container.setQsid(str[1]);
-            }
-        }
-    }
-
     public void generateKBPortfolio() {
-        final RestTemplate restTemplate = new RestTemplate();
+        try (Playwright playwright = Playwright.create();
+             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
 
-        HttpHeaders headers = getHeaders();
+            Page page = browser.newPage();
+            page.navigate("https://obank.kbstar.com/quics?page=C055068&QSL=F#loading");
 
-        ResponseEntity<String> entity = restTemplate.exchange("https://obank.kbstar.com/quics?page=C055069", HttpMethod.GET, new HttpEntity<>(headers), String.class);
-        HttpHeaders responseHeader = entity.getHeaders();
+            page.waitForTimeout(10000L);
 
-        List<String> cookies = Optional.ofNullable(responseHeader.get("set-cookie")).orElseGet(ArrayList::new);
+            doLogin(page);
 
-        for(String cookie : cookies) {
-            String[] str = cookie.split("=");
-            if("JSESSIONID".equals(str[0])) {
-                container.setJsessionId(str[1]);
-                continue;
-            }
-            if("QSID".equals(str[0])) {
-                container.setQsid(str[1]);
-            }
-        }
+            Locator fundBtn = page.locator("//*[@id=\"b049338\"]/ul/li[2]/a");
+            fundBtn.click();
+            page.waitForTimeout(1000L);
 
-        String responseBody = Optional.ofNullable(entity.getBody()).orElse("");
-        Document doc = Jsoup.parse(responseBody);
+            Locator fundDetailBtn = page.locator("//*[@id=\"btn_Ptflo_1\"]");
+            fundDetailBtn.click();
+            page.waitForTimeout(1000L);
 
-        Optional<Element> portfolioElement = Optional.ofNullable(doc.selectFirst("#IBF > div.ui-togglecon.prtflo"));
+            KBPortfolioDTO.KBPortfolioDTOBuilder builder = KBPortfolioDTO.builder();
 
-        KBPortfolioDTO.KBPortfolioDTOBuilder builder = KBPortfolioDTO.builder();
+            Locator bankAccountLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/div[1]");
+            String bankAccount = bankAccountLocator.innerText();
+            builder.bankAccount(bankAccount);
 
-        if(portfolioElement.isPresent()) {
-            Element element = portfolioElement.get();
-            Elements elements = element.children();
-            if(!elements.isEmpty()) {
-                Element totalElement = elements.get(0);
+            Locator portfolioNameLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/h3");
+            String portfolioTitle = portfolioNameLocator.innerText();
+            builder.portfolioTitle(portfolioTitle);
 
-                Elements totalElementChildren = totalElement.children();
+            Locator totalInvestmentLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/strong");
+            String totalInvestment = totalInvestmentLocator.innerText();
+            builder.totalInvestment(totalInvestment);
 
-                if(!totalElementChildren.isEmpty()) {
-                    Element bankAccountElement = totalElementChildren.get(0);
-                    String bankAccount = bankAccountElement.text();
-                    builder.bankAccount(bankAccount);
+            Locator isPositiveLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/span/b");
+            boolean isPositive = "상승".equals(isPositiveLocator.innerText());
+            builder.isPositive(isPositive);
 
-                    Element portfolioTitleElement = totalElementChildren.size() > 1 ? totalElementChildren.get(1) : new Element("h3");
-                    String portfolioTitle = portfolioTitleElement.text();
-                    builder.portfolioTitle(portfolioTitle);
+            Locator totalInvestmentRevenueLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/span");
+            String totalRevenue = totalInvestmentRevenueLocator.innerText();
+            builder.totalRevenue(totalRevenue);
 
-                    Element portfolioInfoElement = totalElementChildren.size() > 2 ? totalElementChildren.get(2) : new Element("ul");
+            List<Locator> fundDetailLocators = page.locator("//*[@id=\"포트폴리오목록_0000339270\"]/div/ul/li").all();
 
-                    Elements portfolioInfoChildren = portfolioInfoElement.children();
+            List<FundDetail> fundDetails = fundDetailLocators.stream().map(fundDetailLocator -> {
+                FundDetail.FundDetailBuilder fundDetailBuilder = FundDetail.builder();
 
-                    if(portfolioInfoChildren.size() > 1) {
-                        Element totalInvestmentElementWrapper = portfolioInfoChildren.get(1);
-                        Elements totalInvestmentElements = totalInvestmentElementWrapper.children();
+                Locator ddLocator = fundDetailLocator.locator("//div[1]/dl/dd");
 
-                        if(!totalInvestmentElements.isEmpty()) {
-                            Element totalInvestmentElement = totalInvestmentElements.get(0);
-                            String totalInvestment = totalInvestmentElement.text();
-                            builder.totalInvestment(totalInvestment);
+                Locator fundBankAccountLocator = ddLocator.locator("//span[2]");
+                String fundBankAccount = fundBankAccountLocator.innerText();
+                fundDetailBuilder.fundBankAccount(fundBankAccount);
 
-                            Element totalRevenueElement = totalInvestmentElements.size() > 1 ? totalInvestmentElements.get(1) : new Element("span");
+                Locator fundNameLocator = ddLocator.locator("//span[3]");
+                String fundName = fundNameLocator.innerText();
+                fundDetailBuilder.fundName(fundName);
 
-                            Elements totalRevenueElements = totalRevenueElement.children();
+                Locator spanLocator = fundDetailLocator.locator("//div[2]/dl[2]/dd/span");
 
-                            String totalRevenue = totalRevenueElement.text();
-                            builder.totalRevenue(totalRevenue);
+                String revenueText = spanLocator.innerText();
 
-                            if(!totalRevenueElements.isEmpty()) {
-                                Element isPositiveElement = totalRevenueElements.get(0);
-                                Boolean isPositive = "상승".equals(isPositiveElement.text().trim());
-                                builder.isPositive(isPositive);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                String[] revenueArr = revenueText.split("\n");
 
-        Optional<Element> portfolioDetailElement = Optional.ofNullable(doc.selectFirst("#포트폴리오목록_0000339270 > div > ul"));
+                boolean isFundPositive = "상승".equals(revenueArr[0]);
+                fundDetailBuilder.isFundPositive(isFundPositive);
 
-        if(portfolioDetailElement.isPresent()) {
-            Element element = portfolioDetailElement.get();
-            Elements elements = element.children();
-            for(Element detailUl : elements) {
-                Elements detailLis = detailUl.children();
+                String fundRevenue = revenueArr[1];
+                fundDetailBuilder.fundRevenue(fundRevenue);
 
-                for(Element detailDiv : detailLis) {
-                    //Elements detailChildren = detailChild.children();
-                }
+                Locator amountLocator = fundDetailLocator.locator("//div[2]/dl[3]/dd/span");
+                String fundAmount = amountLocator.innerText();
+                fundDetailBuilder.fundAmount(fundAmount);
 
-            }
+                return fundDetailBuilder.build();
+            }).toList();
+
+            builder.fundDetails(fundDetails);
+
+            container.setDto(builder.build());
         }
     }
 
+    private void doLogin(Page page) {
+        Locator aidTab = page.locator("//*[@id=\"aidtab\"]");
+        page.waitForTimeout(1000L);
+
+        aidTab.click();
+        page.waitForTimeout(1000L);
+
+        Locator id = page.locator("//*[@id=\"txtWWWBnkgLginID\"]");
+        id.fill("DROW724");
+        page.waitForTimeout(1000L);
+
+        page.keyboard().press("Tab");
+        page.waitForTimeout(1000L);
+
+        Locator a = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[23]");
+        a.click();
+        page.waitForTimeout(1000L);
+        a.click();
+        page.waitForTimeout(1000L);
+
+        Locator btn1 = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[3]");
+        btn1.click();
+        page.waitForTimeout(1000L);
+        btn1.click();
+        page.waitForTimeout(1000L);
+
+        Locator btn9 = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[11]");
+        btn9.click();
+        page.waitForTimeout(1000L);
+
+        Locator btn5 = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[7]");
+        btn5.click();
+        page.waitForTimeout(1000L);
+
+        Locator btn6 = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[8]");
+        btn6.click();
+        page.waitForTimeout(1000L);
+
+        Locator btn2 = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[4]");
+        btn2.click();
+        page.waitForTimeout(1000L);
+
+        Locator closeBtn = page.locator("//*[@id=\"nppfs-keypad-LoginPassword\"]/div/div[2]/img[2]");
+        closeBtn.click();
+        page.waitForTimeout(1000L);
+
+        Locator loginBtn = page.locator("//*[@id=\"idLoginBtn\"]");
+        loginBtn.click();
+
+        page.waitForTimeout(10000L);
+    }
     public KBPortfolioDTO retrieveKBPortfolio() {
         return container.getDto();
-    }
-
-    private HttpHeaders getHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", "JSESSIONID=" + container.getJsessionId());
-        headers.add("Cookie", "_xm_webid_1_=794138549");
-        headers.add("Cookie", "WMONID=sGCm9jCRPQh");
-        headers.add("Cookie", "wizinhips_tracer_cid=bidd5ee9a2488ef4f0563e73851de706d5b06444f13");
-        headers.add("Cookie", "TRACER_JSESSIONID=0000r6MR5TSqp2JWqDL4bCNripW:WIZ20201");
-        headers.add("Cookie", "m_sid=%7C1740451375453");
-        headers.add("Cookie", "m_s_start=1740451375453");
-        headers.add("Cookie", "_m_uid=8ced3fc1-eed1-37a2-823f-2e3dca96c38a");
-        headers.add("Cookie", "_m_uidt=S");
-        headers.add("Cookie", "_m_uid_type=A");
-        headers.add("Cookie", "_M_CS[T]=1");
-        headers.add("Cookie", "_LOG_VSTRIDNFIVAL=KD0/u8eHQTKHCLCJ0jktBQ");
-        headers.add("Cookie", "LOG_NEWCONNDSTIC=Y");
-        headers.add("Cookie", "bwCkVal=20250225114304442");
-        headers.add("Cookie", "QSID=" + container.getQsid());
-        headers.add("Cookie", "_ga=GA1.2.1668668342.1740451388");
-        headers.add("Cookie", "_gid=GA1.2.894809670.1740451388");
-        headers.add("Cookie", "PplrCookies=");
-        headers.add("Cookie", "kpdCd=103");
-        headers.add("Cookie", "wizinhips_tracer_bid=bidd5ee9a2488ef4f0563e73851de706d5b06444f13");
-        headers.add("Cookie", "_KB_N_TIKER=");
-        headers.add("Cookie", "_pk_id.SER0000001.ce94=ad5389f6ddda502a.1740451388.0.1740451515..");
-        headers.add("Cookie", "delfino.recentModule=G3");
-        headers.add("Cookie", "_ga_PWF0L3XHV4=GS1.2.1740451388.1.1.1740451514.0.0.0");
-        headers.add("Cookie", "_ga_XTXVQQ6FS8=GS1.2.1740451388.1.1.1740451514.0.0.0");
-        headers.add("Cookie", "_ga_TC7KKN0QLR=GS1.2.1740451388.1.1.1740451514.0.0.0");
-
-        return headers;
     }
 }
