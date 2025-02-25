@@ -1,5 +1,6 @@
 package com.report.controller;
 
+import com.report.response.DailyReportResponse;
 import com.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping
-    public Mono<Object> retrieveReport() {
+    public Mono<DailyReportResponse> retrieveReport() {
         return reportService.retrieveReport();
     }
 }

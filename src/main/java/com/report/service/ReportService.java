@@ -1,5 +1,6 @@
 package com.report.service;
 
+import com.report.response.DailyReportResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -8,7 +9,17 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ReportService {
 
-    public Mono<Object> retrieveReport() {
-       return Mono.just("");
+    private final TossPortfolioService tossPortfolioService;
+
+    private final KBPortfolioService kbPortfolioService;
+
+    public Mono<DailyReportResponse> retrieveReport() {
+        DailyReportResponse response = DailyReportResponse
+                .builder()
+                .tossPortfolioDTO(tossPortfolioService.retrieveTossPortfolio())
+                .kbPortfolioDTO(kbPortfolioService.retrieveKBPortfolio())
+                .build();
+
+       return Mono.just(response);
     }
 }
