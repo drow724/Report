@@ -1,0 +1,59 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.report'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springAiVersion', "1.0.0-M6")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.ai:spring-ai-markdown-document-reader'
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+	implementation 'org.springframework.ai:spring-ai-tika-document-reader'
+	// https://mvnrepository.com/artifact/com.google.guava/guava
+	implementation 'com.google.guava:guava:33.4.0-jre'
+	// https://mvnrepository.com/artifact/com.microsoft.playwright/playwright
+	implementation 'com.microsoft.playwright:playwright:1.50.0'
+	// https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+	// https://mvnrepository.com/artifact/org.jsoup/jsoup
+	implementation 'org.jsoup:jsoup:1.18.3'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
