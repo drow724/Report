@@ -9,10 +9,6 @@ spring:
         options:
           model: gpt-4-turbo
           maxCompletionTokens : 2048
-      api:
-        timeout:
-          read: 60000
-          connect: 60000
 
 jasypt:
   encryptor:
@@ -20,7 +16,7 @@ jasypt:
 
 report:
   openai:
-    template: "{portfolio} 위의 내 포트폴리오를 보고 주요 종목별 경제 뉴스 제공, 포트폴리오 리밸런싱 조언, 추가 매수/매도 전략 추천 부탁할게"
+    template: "{portfolio} 위의 내 포트폴리오를 보고 주요 종목별 경제 뉴스 제공, 포트폴리오 리밸런싱 조언, 추가 매수/매도 전략 추천해줘. markDown으로 작성해주고 가시성 좋게 항목별로 확신하게 구분해서 markDown을 작성하고 주요 챕터, 제목마다 아이콘도 이쁘게 달아줘. "
 
 chrome:
-  auth: /Users/songjaegeun/temp/auth.json
+  auth: /home/ubuntu/cookie/auth.json
