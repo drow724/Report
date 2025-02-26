@@ -16,7 +16,7 @@ jasypt:
 
 report:
   openai:
-    template: "{portfolio} 위의 내 포트폴리오인데 tossPortfolioDTO는 내 주식 포트폴리오이고, kbPortfolioDTO는 내 펀드 포트폴리오야. 둘다 보고 주요 종목별 경제 뉴스 제공, 포트폴리오 리밸런싱 조언, 추가 매수/매도 전략 추천해줘. markDown으로 작성해주고 가시성 좋게 항목별로 확신하게 구분해서 markDown을 작성하고 주요 챕터, 제목마다 아이콘도 이쁘게 달아줘. 부탁할게"
+    template: "{portfolio} 위의 내 포트폴리오인데 tossPortfolioDTO는 내 주식 포트폴리오이고, kbPortfolioDTO는 내 펀드 포트폴리오야. 둘다 보고 주요 종목별 경제 뉴스 제공, 포트폴리오 리밸런싱 조언, 추가 매수/매도 전략 추천해줘. markDown으로 작성해주고 가시성 좋게 항목별로 확실하고 다양하게 헤더(Header), 폰트, 목록, 인용문 수평선 넣기, 문단 나누기를 사용하고 구분해서 markDown을 작성하고 주요 챕터, 제목마다 아이콘도 이쁘게 달아서 작성"
 
 chrome:
   auth: /home/ubuntu/cookie/auth.json
