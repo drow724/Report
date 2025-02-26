@@ -14,7 +14,7 @@ public class WebClientConfiguration {
     public RestClient.Builder restClientBuilder() {
         ReactorClientHttpRequestFactory factory = new ReactorClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofMinutes(10L));
-        factory.setReadTimeout(Duration.ofSeconds(10L));
+        factory.setReadTimeout(Duration.ofMinutes(10L));
         return RestClient.builder()
                 .requestFactory(factory);
     }
