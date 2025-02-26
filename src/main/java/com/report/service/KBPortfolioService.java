@@ -27,6 +27,22 @@ public class KBPortfolioService {
 
             doLogin(page);
 
+            FrameLocator iframe = page.frameLocator("//*[@id=\"AhnLabInstall-Iframe\"]");
+
+            Locator securityCheckBtn = iframe.locator("//*[@id=\"checkbox_AhnLabInstall\"]");
+
+            if(securityCheckBtn.isVisible()) {
+                securityCheckBtn.check();
+                page.waitForTimeout(1000L);
+            }
+
+            Locator securityCloseBtn = iframe.locator("//*[@id=\"b053921\"]/div/div[3]/span/input");
+
+            if(securityCloseBtn.isVisible()) {
+                securityCloseBtn.click();
+                page.waitForTimeout(1000L);
+            }
+
             Locator fundBtn = page.locator("//*[@id=\"b049338\"]/ul/li[2]/a");
             fundBtn.click();
             page.waitForTimeout(1000L);

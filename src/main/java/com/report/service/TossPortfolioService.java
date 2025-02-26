@@ -22,105 +22,41 @@ public class TossPortfolioService {
     public void generateTossPortfolio() {
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
-            BrowserContext context = browser.newContext();
-            context.addCookies(List.of(
-                    new Cookie("AMP_7e34840f59", "JTdCJTIyZGV2aWNlSWQlMjIlM0ElMjI2OTI4YTQyNS03ZDk5LTRmMjMtOTM2Ni1mYjg3ZTg5NzY4YjklMjIlMkMlMjJzZXNzaW9uSWQlMjIlM0ExNzQwMzcwOTUyNjAwJTJDJTIyb3B0T3V0JTIyJTNBZmFsc2UlMkMlMjJsYXN0RXZlbnRUaW1lJTIyJTNBMTc0MDM3MDk1MjYzMCUyQyUyMmxhc3RFdmVudElkJTIyJTNBMiU3RA==")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("AMP_MKTG_7e34840f59", "JTdCJTIycmVmZXJyZXIlMjIlM0ElMjJodHRwcyUzQSUyRiUyRnd3dy5nb29nbGUuY29tJTJGJTIyJTJDJTIycmVmZXJyaW5nX2RvbWFpbiUyMiUzQSUyMnd3dy5nb29nbGUuY29tJTIyJTdE")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("BTK", "+MNV/ygJhGeoZTek9qQQZUVlyUD6yVe8yx/uOPbSouw=")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("FTK", "zzmIFBfiqT3xFX8TIOgWg41akW+lCri1KQEE4Jc9vSHoJ7AcCW/1/+jkHqy7ckDqxfUH4mbRUQTBZ+zrcIbxYzFTI+98r65MaB7UVDF310pog/0ekZHe1A8XxCwGZtjuM1Y8cKXNF751VJzQ/Ob7wUTxkmrkS99Agq3BT8WuPZiN0fsFKETkQszTZUKS+4gLTb0GStTfb/DcuwTH9IrQvfwZWf6UPTMmfGU+W4qFJ4lWCir26gzxrrFfHTMyZHvwi8KKErVIZubnNqXLIxR07g==")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("SESSION", "OTRhZWE4NGMtOTBjMC00ZDhlLTg3NGQtYzYyMzk3NmQzYTg2")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("UTK", "8DXnVukGa0OMzzOfYXDVikxp2loUGsu1V89XutzuMlT70YiAkuJ8F114AcID7JjdVdaksNb84gam6oJIt07+lNPQh5RGj+FhEkxac5UhF+gx2qSrwFaUeOZ8u7S+24vMcHtjGm//mt8J7psJhnfVDn/EzCAde5XVOFI9i1TjY8vnPgdSIswS6kpVzfapldq0")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("XSRF-TOKEN", "75ff8fe9-80d8-451e-a894-79f74a6fb6a0")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_browserId", "9b8e9cd54b574bc08db7e0344c38e8f9")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_fbp", "fb.1.1740370952637.799260261224315863")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_ga", "GA1.1.918321064.1727596309")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_ga_47NPRZ3ZEE", "GS1.1.1740370930.1.0.1740370944.0.0.0")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_ga_9ZSX4ZMJHK", "GS1.1.1730289386.2.1.1730289397.0.0.0")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_ga_TBW87HKGRS", "GS1.1.1740370953.1.0.1740370957.56.0.0")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_hjSessionUser_1949956", "eyJpZCI6ImVhMGQ2OGU1LWVmM2MtNTE1MC1hMmQ5LTUxMmRhNGI2NTEwMyIsImNyZWF0ZWQiOjE3MjA4NzI5MTg4ODIsImV4aXN0aW5nIjp0cnVlfQ==")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("_hjSessionUser_2505863", "eyJpZCI6IjYzYWVlODU2LWFlMWMtNThhYi04NGJjLTdlNTUyODgwZDFkMiIsImNyZWF0ZWQiOjE3NDAzNzA5NTI2NjIsImV4aXN0aW5nIjpmYWxzZX0=")
-                            .setDomain(".toss.im")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("browserSessionId", "58721408d246420296514ba26eeae988")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("deviceId", "WTS-0f70f36728b647ddb63f0f4b10c53771")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true),
-                    new Cookie("x-toss-distribution-id", "12345")
-                            .setDomain(".tossinvest.com")
-                            .setPath("/")
-                            .setHttpOnly(true)
-                            .setSecure(true)
-            ));
-
-            Page page = context.newPage();
+            Page page = browser.newPage();
 
             page.navigate("https://tossinvest.com/investment-portfolio?product=all");
 
             page.waitForTimeout(5000L);
+
+            Locator idLocator = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[1]/div[1]/div/div/div/input");
+
+            if(idLocator.isVisible()) {
+                idLocator.fill("송재근");
+                page.waitForTimeout(1000L);
+
+                Locator birthDay = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[1]/div[2]/div/div/div/input");
+                birthDay.fill("960626");
+                page.waitForTimeout(1000L);
+
+                Locator phoneNumber = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[2]/div/div/div/input");
+                phoneNumber.fill("01032279606");
+                page.waitForTimeout(1000L);
+
+                Locator checkAll = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[3]/div[1]/div/div/div/input");
+                checkAll.click();
+                page.waitForTimeout(1000L);
+
+                Locator loginBtn = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/button");
+                loginBtn.click();
+                page.waitForTimeout(10000L);
+
+                Locator keepLogin = page.locator("//html/body/div[4]/div[2]/div[3]/div[2]/button[2]");
+                keepLogin.click();
+                page.waitForTimeout(10000L);
+
+                page.navigate("https://tossinvest.com/investment-portfolio?product=all");
+                page.waitForTimeout(5000L);
+            }
 
             String mainSection = "//*[@id=\"__next\"]/div/div[1]/main/main/section/section";
             Locator totalInvestmentLocator = page.locator(mainSection + "/div[1]/div[1]/div/span");
