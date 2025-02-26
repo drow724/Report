@@ -13,8 +13,8 @@ public class WebClientConfiguration {
     @Bean
     public RestClient.Builder restClientBuilder() {
         ReactorClientHttpRequestFactory factory = new ReactorClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofSeconds(120));
-        factory.setReadTimeout(Duration.ofSeconds(120));
+        factory.setConnectTimeout(Duration.ofMinutes(10L));
+        factory.setReadTimeout(Duration.ofSeconds(10L));
         return RestClient.builder()
                 .requestFactory(factory);
     }
