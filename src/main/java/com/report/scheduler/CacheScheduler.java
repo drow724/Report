@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 @RequiredArgsConstructor
 public class CacheScheduler {
@@ -34,23 +37,18 @@ public class CacheScheduler {
     public void generateCache() throws JsonProcessingException {
         tossPortfolioService.generateTossPortfolio();
 
+        Map<String, Object> portfolioMap = new HashMap<>();
         TossPortfolioDTO tossPortfolioDTO = tossPortfolioService.retrieveTossPortfolio();
 
-        StringBuilder builder = new StringBuilder();
-        String tossPortfolio = mapper.writeValueAsString(tossPortfolioDTO);
-        builder.append(tossPortfolio);
-
-        builder.append("\n");
+        portfolioMap.put("tossPortfolioDTO", tossPortfolioDTO);
 
         kBPortfolioService.generateKBPortfolio();
 
         KBPortfolioDTO kbPortfolioDTO = kBPortfolioService.retrieveKBPortfolio();
+        portfolioMap.put("kbPortfolioDTO", kbPortfolioDTO);
 
-        String kbPortfolio = mapper.writeValueAsString(kbPortfolioDTO);
-        builder.append(kbPortfolio);
-
-        builder.append("\n");
-
-        openAiService.generateOpenAi(builder.toString());
+        String portfolio = mapper.writeValueAsString(portfolioMap);
+        
+        openAiService.generateOpenAi(portfolio);
     }
 }
