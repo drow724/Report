@@ -7,8 +7,12 @@ import com.report.constants.TossPortfolioHeader;
 import com.report.container.TossPortfolioCacheContainer;
 import com.report.dto.TossPortfolioDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,12 +21,21 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class TossPortfolioService {
 
+    @Value("${chrome.auth}")
+    private String chromeAuth;
+
     private final TossPortfolioCacheContainer container;
 
     public void generateTossPortfolio() {
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
-            Page page = browser.newPage();
+
+            Path storagePath = Paths.get(chromeAuth);
+
+            BrowserContext context = Files.exists(storagePath) ? browser.newContext(new Browser.NewContextOptions()
+                    .setStorageStatePath(storagePath)) : browser.newContext();
+
+            Page page = context.newPage();
 
             page.navigate("https://tossinvest.com/investment-portfolio?product=all");
 
@@ -168,6 +181,9 @@ public class TossPortfolioService {
                     .build();
 
             container.setDto(dto);
+
+            context.storageState(new BrowserContext.StorageStateOptions()
+                    .setPath(storagePath));
         }
     }
 
