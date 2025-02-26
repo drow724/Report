@@ -64,8 +64,10 @@ public class TossPortfolioService {
                 page.waitForTimeout(10000L);
 
                 Locator keepLogin = page.locator("//html/body/div[4]/div[2]/div[3]/div[2]/button[2]");
-                keepLogin.click();
-                page.waitForTimeout(10000L);
+                if(keepLogin.isVisible()) {
+                    keepLogin.click();
+                    page.waitForTimeout(10000L);
+                }
 
                 page.navigate("https://tossinvest.com/investment-portfolio?product=all");
                 page.waitForTimeout(5000L);

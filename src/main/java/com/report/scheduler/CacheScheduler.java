@@ -51,6 +51,6 @@ public class CacheScheduler {
 
         builder.append("\n");
 
-        //openAiService.retrieveOpenAi(builder.toString());
+        openAiService.generateOpenAi(builder.toString());
     }
 }

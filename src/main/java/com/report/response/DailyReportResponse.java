@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DailyReportResponse {
 
+    private String openAiMarkUpMessage;
+
     private TossPortfolioDTO tossPortfolioDTO;
 
     private KBPortfolioDTO kbPortfolioDTO;

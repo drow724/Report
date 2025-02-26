@@ -13,9 +13,12 @@ public class ReportService {
 
     private final KBPortfolioService kbPortfolioService;
 
+    private final OpenAiService openAiService;
+
     public Mono<DailyReportResponse> retrieveReport() {
         DailyReportResponse response = DailyReportResponse
                 .builder()
+                .openAiMarkUpMessage(openAiService.retrieveOpenAiMarkUpMessage())
                 .tossPortfolioDTO(tossPortfolioService.retrieveTossPortfolio())
                 .kbPortfolioDTO(kbPortfolioService.retrieveKBPortfolio())
                 .build();
