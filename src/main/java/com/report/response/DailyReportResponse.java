@@ -13,6 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DailyReportResponse {
 
+    private String totalInvestment;
+
+    private String originalInvestment;
+
+    private String totalRevenue;
+
     private String openAiMarkUpMessage;
 
     private TossPortfolioDTO tossPortfolioDTO;
