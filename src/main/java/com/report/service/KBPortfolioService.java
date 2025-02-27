@@ -8,7 +8,10 @@ import com.report.dto.KBPortfolioDTO.FundDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +78,8 @@ public class KBPortfolioService {
 
             List<Locator> fundDetailLocators = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[3]/ul/li").all();
 
+            final NumberFormat formatter = NumberFormat.getNumberInstance(Locale.KOREA);
+
             List<FundDetail> fundDetails = fundDetailLocators.stream().map(fundDetailLocator -> {
                 FundDetail.FundDetailBuilder fundDetailBuilder = FundDetail.builder();
 
@@ -99,6 +104,12 @@ public class KBPortfolioService {
                 tdLocator = fundDetailLocator.locator("//div[2]/table/tbody/tr[3]/td/div");
                 String principalAmount = tdLocator.innerText();
                 fundDetailBuilder.principalAmount(principalAmount);
+
+                BigInteger evaluationAmountInteger = new BigInteger(evaluationAmount);
+                BigInteger principalAmountInteger = new BigInteger(principalAmount);
+
+                String totalProfit = formatter.format(evaluationAmountInteger.min(principalAmountInteger)) + "원";
+                fundDetailBuilder.totalProfit(totalProfit);
 
                 return fundDetailBuilder.build();
             }).toList();

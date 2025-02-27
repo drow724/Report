@@ -35,6 +35,8 @@ public class KBPortfolioDTO {
 
         private String totalReturnRate;
 
+        private String totalProfit;
+
         private String evaluationAmount;
 
         private String principalAmount;
