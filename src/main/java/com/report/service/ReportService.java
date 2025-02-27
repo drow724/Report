@@ -51,11 +51,14 @@ public class ReportService {
         String kbPortfolioTotalRevenueAmount = kbPortfolioTotalRevenueArr[0];
         BigInteger kbTotalRevenueAmount = new BigInteger(sanitize(kbPortfolioTotalRevenueAmount));
 
-        String totalRevenueAmount = formatter.format(tossTotalRevenueAmount.add(kbTotalRevenueAmount)) + "원";
+        BigInteger zeroInteger = new BigInteger("0");
+
+        BigInteger totalRevenueAmountInteger = tossTotalRevenueAmount.add(kbTotalRevenueAmount);
+        String totalRevenueAmount = (totalRevenueAmountInteger.compareTo(zeroInteger) > 0 ? "+" : "-")
+                + formatter.format(totalRevenueAmountInteger) + "원";
 
         String tossPortfolioTotalRevenuePercent = tossPortfolioTotalRevenueArr[1].replaceAll("[^0-9+-.]", "");
 
-        BigInteger zeroInteger = new BigInteger("0");
         boolean hasAbs = tossPortfolioTotalRevenuePercent.contains("+") || tossPortfolioTotalRevenuePercent.contains("-");
 
         BigDecimal tossTotalRevenuePercent = new BigDecimal(
