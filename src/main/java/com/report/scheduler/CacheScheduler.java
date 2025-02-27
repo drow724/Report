@@ -33,7 +33,7 @@ public class CacheScheduler {
     }
 
     // 매일 오전 9시 정각에 캐시 초기화
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 0 9 * * ?", zone = "Asia/Seoul")
     public void generateCache() throws JsonProcessingException {
         tossPortfolioService.generateTossPortfolio();
 
@@ -48,7 +48,7 @@ public class CacheScheduler {
         portfolioMap.put("kbPortfolioDTO", kbPortfolioDTO);
 
         String portfolio = mapper.writeValueAsString(portfolioMap);
-        
+
         openAiService.generateOpenAi(portfolio);
     }
 }
