@@ -21,7 +21,7 @@ public class CacheScheduler {
 
     private final TossPortfolioService tossPortfolioService;
 
-    private final KBPortfolioService kBPortfolioService;
+    private final KBPortfolioService kbPortfolioService;
 
     private final OpenAiService openAiService;
 
@@ -42,9 +42,9 @@ public class CacheScheduler {
 
         portfolioMap.put("tossPortfolioDTO", tossPortfolioDTO);
 
-        kBPortfolioService.generateKBPortfolio();
+        kbPortfolioService.generateKBPortfolio();
 
-        KBPortfolioDTO kbPortfolioDTO = kBPortfolioService.retrieveKBPortfolio();
+        KBPortfolioDTO kbPortfolioDTO = kbPortfolioService.retrieveKBPortfolio();
         portfolioMap.put("kbPortfolioDTO", kbPortfolioDTO);
 
         String portfolio = mapper.writeValueAsString(portfolioMap);
