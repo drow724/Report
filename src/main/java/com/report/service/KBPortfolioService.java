@@ -109,7 +109,7 @@ public class KBPortfolioService {
                 BigInteger evaluationAmountInteger = new BigInteger(CurrencyUtils.sanitize(evaluationAmount));
                 BigInteger principalAmountInteger = new BigInteger(CurrencyUtils.sanitize(principalAmount));
 
-                String totalProfit = formatter.format(evaluationAmountInteger.min(principalAmountInteger)) + "원";
+                String totalProfit = formatter.format(evaluationAmountInteger.subtract(principalAmountInteger)) + "원";
                 fundDetailBuilder.totalProfit(totalProfit);
 
                 return fundDetailBuilder.build();
