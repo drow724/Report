@@ -13,15 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 public class KBPortfolioDTO {
 
-    private String bankAccount;
-
     private String portfolioTitle;
 
     private String totalInvestment;
 
-    private String totalRevenue;
+    private String originalInvestment;
 
-    private Boolean isPositive;
+    private String totalRevenue;
 
     private List<FundDetail> fundDetails;
 
@@ -35,10 +33,10 @@ public class KBPortfolioDTO {
 
         private String fundName;
 
-        private Boolean isFundPositive;
+        private String totalReturnRate;
 
-        private String fundRevenue;
+        private String evaluationAmount;
 
-        private String fundAmount;
+        private String principalAmount;
     }
 }

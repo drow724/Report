@@ -18,7 +18,7 @@ public class KBPortfolioService {
 
     public void generateKBPortfolio() {
         try (Playwright playwright = Playwright.create();
-             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
+             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false))) {
 
             Page page = browser.newPage();
             page.navigate("https://obank.kbstar.com/quics?page=C055068&QSL=F#loading");
@@ -47,62 +47,58 @@ public class KBPortfolioService {
             fundBtn.click();
             page.waitForTimeout(1000L);
 
-            Locator fundDetailBtn = page.locator("//*[@id=\"btn_Ptflo_1\"]");
-            fundDetailBtn.click();
-            page.waitForTimeout(1000L);
+            Locator portfolioDetailBtn = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/div[2]/a[1]");
+            portfolioDetailBtn.click();
+            page.waitForTimeout(5000L);
 
             KBPortfolioDTO.KBPortfolioDTOBuilder builder = KBPortfolioDTO.builder();
 
-            Locator bankAccountLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/div[1]");
-            String bankAccount = bankAccountLocator.innerText();
-            builder.bankAccount(bankAccount);
-
-            Locator portfolioNameLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/h3");
+            Locator portfolioNameLocator = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[1]/div[1]/h3");
             String portfolioTitle = portfolioNameLocator.innerText();
             builder.portfolioTitle(portfolioTitle);
 
-            Locator totalInvestmentLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/strong");
+            Locator totalInvestmentLocator = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[1]/div[1]/div[2]/div[2]/dl[1]/dd");
             String totalInvestment = totalInvestmentLocator.innerText();
             builder.totalInvestment(totalInvestment);
 
-            Locator isPositiveLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/span/b");
-            boolean isPositive = "상승".equals(isPositiveLocator.innerText());
-            builder.isPositive(isPositive);
+            Locator originalInvestmentLocator = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[1]/div[1]/div[2]/div[2]/dl[2]/dd");
+            String originalInvestment = originalInvestmentLocator.innerText();
+            builder.originalInvestment(originalInvestment);
 
-            Locator totalInvestmentRevenueLocator = page.locator("//*[@id=\"IBF\"]/div[6]/div[1]/ul/li[2]/span");
-            String totalRevenue = totalInvestmentRevenueLocator.innerText();
-            builder.totalRevenue(totalRevenue);
+            Locator totalRevenuePercentLocator = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/dl[1]/dd");
+            String totalRevenuePercent = totalRevenuePercentLocator.innerText();
 
-            List<Locator> fundDetailLocators = page.locator("//*[@id=\"포트폴리오목록_0000339270\"]/div/ul/li").all();
+            Locator totalRevenueLocator = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[1]/div[1]/div[2]/div[1]/dl[3]/dd");
+            String totalRevenue = totalRevenueLocator.innerText();
+
+            builder.totalRevenue(totalRevenue + " (" + totalRevenuePercent + ")");
+
+            List<Locator> fundDetailLocators = page.locator("//*[@id=\"b059495\"]/div[2]/div/div[2]/div/div[3]/ul/li").all();
 
             List<FundDetail> fundDetails = fundDetailLocators.stream().map(fundDetailLocator -> {
                 FundDetail.FundDetailBuilder fundDetailBuilder = FundDetail.builder();
 
-                Locator ddLocator = fundDetailLocator.locator("//div[1]/dl/dd");
+                Locator goodsLocator = fundDetailLocator.locator("//div[1]");
 
-                Locator fundBankAccountLocator = ddLocator.locator("//span[2]");
-                String fundBankAccount = fundBankAccountLocator.innerText();
-                fundDetailBuilder.fundBankAccount(fundBankAccount);
-
-                Locator fundNameLocator = ddLocator.locator("//span[3]");
+                Locator fundNameLocator = goodsLocator.locator("//a/h3/strong");
                 String fundName = fundNameLocator.innerText();
                 fundDetailBuilder.fundName(fundName);
 
-                Locator spanLocator = fundDetailLocator.locator("//div[2]/dl[2]/dd/span");
+                Locator fundBankAccountLocator = goodsLocator.locator("//p[1]/a");
+                String fundBankAccount = fundBankAccountLocator.innerText();
+                fundDetailBuilder.fundBankAccount(fundBankAccount);
 
-                String revenueText = spanLocator.innerText();
+                Locator tdLocator = fundDetailLocator.locator("//div[2]/table/tbody/tr[1]/td/div");
+                String fundRevenue = tdLocator.innerText();
+                fundDetailBuilder.totalReturnRate(fundRevenue);
 
-                String[] revenueArr = revenueText.split("\n");
+                tdLocator = fundDetailLocator.locator("//div[2]/table/tbody/tr[2]/td/div");
+                String evaluationAmount = tdLocator.innerText();
+                fundDetailBuilder.evaluationAmount(evaluationAmount);
 
-                boolean isFundPositive = "상승".equals(revenueArr[0]);
-                fundDetailBuilder.isFundPositive(isFundPositive);
-
-                String fundRevenue = revenueArr[1];
-                fundDetailBuilder.fundRevenue(fundRevenue);
-
-                Locator amountLocator = fundDetailLocator.locator("//div[2]/dl[3]/dd/span");
-                String fundAmount = amountLocator.innerText();
-                fundDetailBuilder.fundAmount(fundAmount);
+                tdLocator = fundDetailLocator.locator("//div[2]/table/tbody/tr[3]/td/div");
+                String principalAmount = tdLocator.innerText();
+                fundDetailBuilder.principalAmount(principalAmount);
 
                 return fundDetailBuilder.build();
             }).toList();
