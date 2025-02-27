@@ -5,6 +5,7 @@ import com.report.container.KBPortfolioCacheContainer;
 import com.report.dto.KBPortfolioDTO;
 import com.report.dto.KBPortfolioDTO.FundDetail;
 
+import com.report.utils.CurrencyUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -105,8 +106,8 @@ public class KBPortfolioService {
                 String principalAmount = tdLocator.innerText();
                 fundDetailBuilder.principalAmount(principalAmount);
 
-                BigInteger evaluationAmountInteger = new BigInteger(evaluationAmount);
-                BigInteger principalAmountInteger = new BigInteger(principalAmount);
+                BigInteger evaluationAmountInteger = new BigInteger(CurrencyUtils.sanitize(evaluationAmount));
+                BigInteger principalAmountInteger = new BigInteger(CurrencyUtils.sanitize(principalAmount));
 
                 String totalProfit = formatter.format(evaluationAmountInteger.min(principalAmountInteger)) + "원";
                 fundDetailBuilder.totalProfit(totalProfit);

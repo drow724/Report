@@ -3,6 +3,7 @@ package com.report.service;
 import com.report.dto.KBPortfolioDTO;
 import com.report.dto.TossPortfolioDTO;
 import com.report.response.DailyReportResponse;
+import com.report.utils.CurrencyUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -29,13 +30,13 @@ public class ReportService {
         TossPortfolioDTO tossPortfolioDTO = tossPortfolioService.retrieveTossPortfolio();
         KBPortfolioDTO kbPortfolioDTO = kbPortfolioService.retrieveKBPortfolio();
 
-        BigInteger tossTotalInvestment = new BigInteger(sanitize(tossPortfolioDTO.getTotalInvestment()));
-        BigInteger kbTotalInvestment = new BigInteger(sanitize(kbPortfolioDTO.getTotalInvestment()));
+        BigInteger tossTotalInvestment = new BigInteger(CurrencyUtils.sanitize(tossPortfolioDTO.getTotalInvestment()));
+        BigInteger kbTotalInvestment = new BigInteger(CurrencyUtils.sanitize(kbPortfolioDTO.getTotalInvestment()));
 
         String totalInvestment = formatter.format(tossTotalInvestment.add(kbTotalInvestment)) + "원";
 
-        BigInteger tossOriginalInvestment = new BigInteger(sanitize(tossPortfolioDTO.getOriginalInvestment()));
-        BigInteger kbOriginalInvestment = new BigInteger(sanitize(kbPortfolioDTO.getOriginalInvestment()));
+        BigInteger tossOriginalInvestment = new BigInteger(CurrencyUtils.sanitize(tossPortfolioDTO.getOriginalInvestment()));
+        BigInteger kbOriginalInvestment = new BigInteger(CurrencyUtils.sanitize(kbPortfolioDTO.getOriginalInvestment()));
 
         String originalInvestment = formatter.format(tossOriginalInvestment.add(kbOriginalInvestment)) + "원";
 
@@ -43,13 +44,13 @@ public class ReportService {
         String[] tossPortfolioTotalRevenueArr = tossPortfolioTotalRevenue.split(" ");
 
         String tossPortfolioTotalRevenueAmount = tossPortfolioTotalRevenueArr[0];
-        BigInteger tossTotalRevenueAmount = new BigInteger(sanitize(tossPortfolioTotalRevenueAmount));
+        BigInteger tossTotalRevenueAmount = new BigInteger(CurrencyUtils.sanitize(tossPortfolioTotalRevenueAmount));
 
         String kbPortfolioTotalRevenue = kbPortfolioDTO.getTotalRevenue();
         String[] kbPortfolioTotalRevenueArr = kbPortfolioTotalRevenue.split(" ");
 
         String kbPortfolioTotalRevenueAmount = kbPortfolioTotalRevenueArr[0];
-        BigInteger kbTotalRevenueAmount = new BigInteger(sanitize(kbPortfolioTotalRevenueAmount));
+        BigInteger kbTotalRevenueAmount = new BigInteger(CurrencyUtils.sanitize(kbPortfolioTotalRevenueAmount));
 
         BigInteger zeroInteger = new BigInteger("0");
 
@@ -86,9 +87,5 @@ public class ReportService {
                 .build();
 
        return Mono.just(response);
-    }
-
-    private String sanitize(String str) {
-        return str.replaceAll("[^0-9()+-]", "");
     }
 }
