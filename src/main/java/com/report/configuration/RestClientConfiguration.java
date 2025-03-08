@@ -10,6 +10,9 @@ import java.time.Duration;
 @Configuration(proxyBeanMethods = false)
 public class RestClientConfiguration {
 
+    /*
+        OpenAiApi class 사용
+    */
     @Bean
     public RestClient.Builder restClientBuilder() {
         ReactorClientHttpRequestFactory factory = new ReactorClientHttpRequestFactory();
