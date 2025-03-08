@@ -1,7 +1,6 @@
 package com.report.service;
 
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.Cookie;
 import com.report.constants.ReportType;
 import com.report.constants.TossPortfolioHeader;
 import com.report.container.TossPortfolioCacheContainer;
@@ -24,11 +23,14 @@ public class TossPortfolioService {
     @Value("${chrome.auth}")
     private String chromeAuth;
 
+    @Value("#{environment['spring.profiles.active'] == 'local' ? false : true}")
+    private boolean isNotLocal;
+
     private final TossPortfolioCacheContainer container;
 
     public void generateTossPortfolio() {
         try (Playwright playwright = Playwright.create();
-             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
+             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(isNotLocal))) {
 
             Path storagePath = Paths.get(chromeAuth);
 

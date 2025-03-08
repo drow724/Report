@@ -19,18 +19,21 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class KBPortfolioService {
 
-    private final KBPortfolioCacheContainer container;
-
     @Value("${kb.password}")
     private String kbPassword;
 
     @Value("${kb.id}")
     private String kbId;
 
+    @Value("#{environment['spring.profiles.active'] == 'local' ? false : true}")
+    private boolean isNotLocal;
+
+    private final KBPortfolioCacheContainer container;
+    
     public void generateKBPortfolio() {
         //Playwright 실행
         try (Playwright playwright = Playwright.create();
-             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions())) {
+             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(isNotLocal))) {
 
             //새탭 활성화
             Page page = browser.newPage();
