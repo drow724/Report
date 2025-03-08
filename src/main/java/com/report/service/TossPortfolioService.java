@@ -1,7 +1,6 @@
 package com.report.service;
 
 import com.microsoft.playwright.*;
-import com.report.constants.ReportType;
 import com.report.constants.TossPortfolioHeader;
 import com.report.container.TossPortfolioCacheContainer;
 import com.report.dto.TossPortfolioDTO;
