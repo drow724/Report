@@ -22,6 +22,11 @@ kb:
   id: ENC(ecGpJSU3v18shsYaCcp8eA==)
   password: ENC(uO6VgHReKQ8FYOrRMj9zqSipNsOa7dVXMl9EdFbylhU=)
 
+toss:
+  id: ENC(OLm9iKuN9xCNUoyFyFUIQUQbF7xpLLc9)
+  birthDay: ENC(j0nmhwmVKjfUGgQwCVmcfg==)
+  phoneNumber: ENC(+Qrzsn++O0uPlhZo0mIIEF24qrNiiriW)
+
 ---
 spring:
   config:

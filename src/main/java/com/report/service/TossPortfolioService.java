@@ -25,6 +25,15 @@ public class TossPortfolioService {
     @Value("#{environment['spring.profiles.active'] == 'local' ? false : true}")
     private boolean isNotLocal;
 
+    @Value("${toss.id}")
+    private String id;
+
+    @Value("${toss.birthDay}")
+    private String birthDay;
+
+    @Value("${toss.phoneNumber}")
+    private String phoneNumber;
+
     private final TossPortfolioCacheContainer container;
 
     public void generateTossPortfolio() {
@@ -54,17 +63,17 @@ public class TossPortfolioService {
             //아이디 Input이 보인다면 미로그인 상태
             if(idLocator.isVisible()) {
                 //아이디 (이름) 선택 및 입력
-                idLocator.fill("송재근");
+                idLocator.fill(id);
                 page.waitForTimeout(1000L);
 
                 //생년월일 선택 및 입력
-                Locator birthDay = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[1]/div[2]/div/div/div/input");
-                birthDay.fill("960626");
+                Locator birthDayLocator = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[1]/div[2]/div/div/div/input");
+                birthDayLocator.fill(birthDay);
                 page.waitForTimeout(1000L);
 
                 //전화번호 선택 및 입력
-                Locator phoneNumber = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[2]/div/div/div/input");
-                phoneNumber.fill("01032279606");
+                Locator phoneNumberLocator = page.locator("//html/body/div[1]/div/div/main/div/div[1]/div/div/div[3]/form/div[2]/div/div/div/input");
+                phoneNumberLocator.fill(phoneNumber);
                 page.waitForTimeout(1000L);
 
                 //개인정보 관련 전체 동의 선택 및 클릭
