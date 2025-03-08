@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClient;
 import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
-public class WebClientConfiguration {
+public class RestClientConfiguration {
 
     @Bean
     public RestClient.Builder restClientBuilder() {
