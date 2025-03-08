@@ -20,3 +20,7 @@ report:
 
 chrome:
   auth: /home/ubuntu/cookie/auth.json
+
+kb:
+  id: ENC(ecGpJSU3v18shsYaCcp8eA==)
+  password: ENC(uO6VgHReKQ8FYOrRMj9zqSipNsOa7dVXMl9EdFbylhU=)
