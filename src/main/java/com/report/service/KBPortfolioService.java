@@ -32,6 +32,7 @@ public class KBPortfolioService {
     
     public void generateKBPortfolio() {
         //Playwright 실행
+        //active.profile=local일 경우 headless false
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(isNotLocal))) {
 
@@ -157,6 +158,7 @@ public class KBPortfolioService {
 
             builder.fundDetails(fundDetails);
 
+            //컨테이너 저장
             container.setDto(builder.build());
         }
     }

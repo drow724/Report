@@ -29,15 +29,22 @@ public class OpenAiService {
 
     public void generateOpenAi(String portfolio) {
         PromptTemplate promptTemplate = new PromptTemplate(template);
+
+        //portfolio 플레이스 홀더 json으로 치환
         promptTemplate.add("portfolio", portfolio);
 
+        //프롬프트 생성
         Prompt prompt = promptTemplate.create();
+
+        //chatGpt api 호출
         ChatResponse chatResponse = openAiChatModel.call(prompt);
 
+        //결과값 꺼내기
         Generation results = chatResponse.getResult();
         AssistantMessage assistantMessage = results.getOutput();
         String text = assistantMessage.getText();
 
+        //컨테이너 저장
         openAiCacheContainer.setOpenAiMarkUpMessage(text);
     }
 
